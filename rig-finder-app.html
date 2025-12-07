@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Rig Finder – Camper, Van, Ambulance, Trailer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Single-page styles -->
+    <style>
+        :root {
+            --bg: #bfbfbf;
+            --card: #040404;
+            --accent: #6cc9ff ;
+            /* deep rust orange */
+            --accent-soft: #f4d8a9;
+            /* warm cream accent */
+            --text: #f9fafb;
+            --muted: #9ca3af;
+            /* gray */
+            --good: #22c55e;
+            --border: #27272a;
+            /* dark gray border */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #6cc9ff 0%, var(--card) 75%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(180deg, #262626, #1a1a1a);
+            border-radius: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65);
+            padding: 1.75rem 1.5rem 2.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .app-shell {
+                padding: 2.5rem 2.75rem 3rem;
+            }
+        }
+
+        .app-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 1.75rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.75rem;
+        }
+
+        .title-block h1 {
+            font-size: clamp(1.75rem, 3vw, 2.4rem);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .title-pill {
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .emoji-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, #ffffff, #fee2e2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.4);
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--muted);
+            max-width: 32rem;
+            margin-top: 0.35rem;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a {
+            color: #0a0a0a;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.65rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            transition: 0.18s ease;
+        }
+
+        .nav-links a span {
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            border-color: var(--accent-soft);
+            background-color: var(--accent-soft);
+            transform: translateY(-1px);
+        }
+
+        .nav-back {
+            font-weight: 600;
+            color: #000000;
+            background: linear-gradient(135deg, var(--accent-soft), #ffffff);
+            border-color: var(--accent-soft);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-cta {
+            font-weight: 600;
+            color: #ffffff;
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-cta:hover {
+            color: #000000;
+            background: var(--accent-soft);
+            border-color: var(--accent-soft);
+        }
+
+        .badge-small {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            color: var(--muted);
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+            gap: 1.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .app-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .card {
+            background: radial-gradient(circle at top left, rgba(244, 216, 169, 0.08), transparent 58%),
+                rgba(17, 17, 17, 0.98);
+            border-radius: 1.25rem;
+            border: 1px solid rgba(39, 39, 42, 0.95);
+            padding: 1.25rem 1.5rem 1.4rem;
+        }
+
+        .card.secondary {
+            background: radial-gradient(circle at top right, rgba(193, 56, 22, 0.22), transparent 55%),
+                rgba(17, 17, 17, 0.98);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .helper-text {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 1rem;
+        }
+
+        .field-group {
+            margin-bottom: 0.85rem;
+        }
+
+        .field-label {
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .field-label span {
+            font-weight: 500;
+            color: #e5e7eb;
+        }
+
+        select,
+        input[type="range"] {
+            width: 100%;
+            background: #050505;
+            border-radius: 0.6rem;
+            border: 1px solid rgba(75, 85, 99, 0.9);
+            padding: 0.5rem 0.6rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        select:focus,
+        input[type="range"]:focus {
+            border-color: var(--accent-soft);
+            box-shadow: 0 0 0 1px rgba(244, 216, 169, 0.65);
+            background: #050505;
+        }
+
+        input[type="range"] {
+            padding: 0;
+            height: 1.2rem;
+            accent-color: var(--accent);
+        }
+
+        .range-value {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.1rem;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 0.35rem;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
+            transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+            color: #000000;
+            background: #6cc9ff ;
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+        }
+
+        .result-type {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .type-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(193, 56, 22, 0.16);
+            border: 1px solid rgba(244, 216, 169, 0.75);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .type-pill span {
+            font-size: 0.8rem;
+            color: var(--accent-soft);
+        }
+
+        .result-body {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 0.7rem;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 0.18rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(75, 85, 99, 0.9);
+            color: var(--muted);
+            background: rgba(15, 15, 15, 0.98);
+        }
+
+        .checklist {
+            list-style: none;
+            display: grid;
+            gap: 0.35rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .checklist li {
+            display: flex;
+            gap: 0.45rem;
+            align-items: flex-start;
+        }
+
+        .check-icon {
+            margin-top: 0.1rem;
+            font-size: 0.9rem;
+            color: var(--good);
+        }
+
+        .tip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+            gap: 0.5rem;
+        }
+
+        .tip-header h3 {
+            font-size: 0.92rem;
+        }
+
+        .tip-chip {
+            font-size: 0.7rem;
+            padding: 0.18rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid rgba(71, 85, 105, 0.9);
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .tip-body {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.75rem;
+            background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.06), transparent 55%);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .tip-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+            opacity: 0.8;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border-radius: 999px;
+            border: 1px solid rgba(75, 85, 99, 0.9);
+            color: var(--muted);
+            font-size: 0.8rem;
+            padding: 0.25rem 0.6rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: 0.18s ease;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+            border-color: rgba(148, 163, 184, 0.9);
+            background-color: rgba(24, 24, 27, 0.95);
+        }
+
+        .footnote {
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<!-- You can swap these icons/images for something more general later -->
+<link href="assets/img/ambulance cartoon.png" rel="icon">
+<link href="assets/img/ambulance cartoon.png" rel="apple-touch-icon">
+
+<body>
+    <main class="app-shell">
+        <header class="app-header">
+            <div class="title-block">
+                <div class="title-pill">RIG FINDER HELPER</div>
+                <h1>
+                    <img src="assets/img/cartoon-illustration-blue-van-with-white-background_1220328-9247 Background Removed.png" alt="Cartoon ambulance illustration"
+                        class="cartoon-ambulance" height="80">
+                    <span>Find Your Ideal Adventure Rig</span>
+                </h1>
+                <p class="subtitle">
+                    Answer a few quick questions and get a recommendation for what type of rig fits you best—camper van,
+                    ambulance, trailer, truck camper, or skoolie—plus a practical build tip based on your style.
+                </p>
+            </div>
+            <div class="nav-links">
+                <a href="ambulance-conversion.html" class="nav-back">
+                    <span>← Back to Ambulance Conversion 101</span>
+                </a>
+                <a href="ambulance-app.html" class="nav-cta">
+                    <span>Want specific ambulance conversion options?</span>
+                </a>
+            </div>
+        </header>
+
+        <section class="app-grid">
+            <!-- INPUT CARD -->
+            <section class="card" aria-label="Rig preference form">
+                <h2>Tell Me About Your Rig Plans</h2>
+                <p class="helper-text">These don’t have to be perfect—just pick what feels closest to your situation.
+                </p>
+
+                <div class="field-group">
+                    <div class="field-label">
+                        <span>How do you want to use it?</span>
+                    </div>
+                    <select id="useCase">
+                        <option value="weekend">Weekend trips &amp; short adventures</option>
+                        <option value="fulltime">Full-time living / long-term travel</option>
+                        <option value="work">Mobile workshop / mixed work &amp; play</option>
+                        <option value="stealth">Stealthy city camping &amp; low profile</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">
+                        <span>Build experience & comfort level</span>
+                    </div>
+                    <select id="experience">
+                        <option value="beginner">Beginner – I’ll learn as I go</option>
+                        <option value="intermediate">Intermediate – I’ve built some stuff</option>
+                        <option value="advanced">Advanced – Not my first big build</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">
+                        <span>Budget for the rig (not including travel)</span>
+                        <span class="range-value" id="budgetLabel">$10,000 or less</span>
+                    </div>
+                    <input type="range" id="budget" min="1" max="4" value="2" />
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">
+                        <span>Preferred rig size</span>
+                    </div>
+                    <select id="size">
+                        <option value="compact">Compact &amp; easy to park</option>
+                        <option value="medium">Medium – balance of space &amp; drivability</option>
+                        <option value="large">Large – max space, don’t mind size</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" id="generateBtn" type="button">
+                    <span>Get My Recommendation</span>
+                    <span>⚡️</span>
+                </button>
+
+                <p class="footnote">Tip: Change one setting at a time and see how your recommendation changes.</p>
+            </section>
+
+            <!-- OUTPUT CARD -->
+            <section class="card secondary" aria-label="Recommendation results">
+                <h2>Your Rig Match</h2>
+                <p class="helper-text" id="placeholderText">
+                    Fill out the form on the left and hit <strong>Get My Recommendation</strong> to see what kind of rig
+                    fits
+                    you best, plus a quick checklist to get started.
+                </p>
+
+                <div id="result" style="display: none;">
+                    <div class="result-type" id="resultType"></div>
+                    <div class="type-pill" id="resultPill"></div>
+
+                    <p class="result-body" id="resultBody"></p>
+
+                    <div class="tag-row" id="tagRow"></div>
+
+                    <ul class="checklist" id="checklist"></ul>
+
+                    <div class="tip-header">
+                        <h3>Build Tip</h3>
+                        <span class="tip-chip" id="tipTag">Beginner-friendly</span>
+                    </div>
+                    <p class="tip-body" id="tipBody"></p>
+                    <div class="tip-meta">
+                        <span id="tipSource">Based on your answers</span>
+                        <button class="btn-ghost" id="newTipBtn" type="button">
+                            <span>New tip</span>
+                            <span>🔁</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- EXTRA RANDOM TIP CARD -->
+        <section class="card" aria-label="Extra random build tip" style="margin-top: 1.5rem;">
+            <h2>Bonus Build Tip</h2>
+            <p class="helper-text">
+                Not sure where to start today? Use this to get a quick, practical idea for making progress on your rig.
+            </p>
+            <p class="tip-body" id="extraTipBody">
+                Click the button to get a random build tip.
+            </p>
+            <button class="btn-ghost" id="extraTipBtn" type="button" style="margin-top: 0.35rem;">
+                <span>Get Random Tip</span>
+                <span>✨</span>
+            </button>
+        </section>
+    </main>
+
+    <!-- Single-page script -->
+    <script>
+        const budgetInput = document.getElementById('budget');
+        const budgetLabel = document.getElementById('budgetLabel');
+        const generateBtn = document.getElementById('generateBtn');
+        const newTipBtn = document.getElementById('newTipBtn');
+
+        const useCaseSelect = document.getElementById('useCase');
+        const experienceSelect = document.getElementById('experience');
+        const sizeSelect = document.getElementById('size');
+
+        const placeholderText = document.getElementById('placeholderText');
+        const resultContainer = document.getElementById('result');
+        const resultTypeEl = document.getElementById('resultType');
+        const resultPillEl = document.getElementById('resultPill');
+        const resultBodyEl = document.getElementById('resultBody');
+        const tagRowEl = document.getElementById('tagRow');
+        const checklistEl = document.getElementById('checklist');
+        const tipTagEl = document.getElementById('tipTag');
+        const tipBodyEl = document.getElementById('tipBody');
+        const tipSourceEl = document.getElementById('tipSource');
+        const extraTipBodyEl = document.getElementById('extraTipBody');
+        const extraTipBtn = document.getElementById('extraTipBtn');
+
+        const tips = {
+            beginner: [
+                "Start with a simple layout sketch on paper before you touch a tool. Bed, storage, and kitchen triangle first.",
+                "Don’t overcomplicate your first electrical system. A basic battery, solar panel, and fuse box can take you far.",
+                "Focus on insulation and airflow early—it’s way harder to fix later once everything is built in.",
+                "Use cardboard mockups to test cabinet depths, bed height, and walking space before cutting real wood."
+            ],
+            intermediate: [
+                "Pick one system to 'overbuild' a little—usually electrical or water—so you have room to grow into the rig.",
+                "If you might switch rigs later (van to trailer, etc.), invest in portable gear like a fridge and power station.",
+                "Plan where your heavy items live (water, batteries, tools) to keep weight low and centered over the axles."
+            ],
+            advanced: [
+                "If you’re comfortable building, think modular: design furniture that can move between rigs or be sold separately.",
+                "Consider separating daily driver and home: a towable rig or truck camper can give more flexibility over time.",
+                "Wire in extra circuits and future expansion points now—it’s cheap today and expensive later."
+            ]
+        };
+
+        const allTips = [
+            ...tips.beginner,
+            ...tips.intermediate,
+            ...tips.advanced
+        ];
+
+        function getRandomGlobalTip() {
+            const index = Math.floor(Math.random() * allTips.length);
+            return allTips[index];
+        }
+
+        function handleExtraTip() {
+            extraTipBodyEl.textContent = getRandomGlobalTip();
+        }
+
+        function updateBudgetLabel() {
+            const value = Number(budgetInput.value);
+            let label;
+            switch (value) {
+                case 1:
+                    label = '$5,000 or less';
+                    break;
+                case 2:
+                    label = '$5,000 – $15,000';
+                    break;
+                case 3:
+                    label = '$15,000 – $35,000';
+                    break;
+                case 4:
+                    label = '$35,000+';
+                    break;
+                default:
+                    label = '$10,000 or less';
+            }
+            budgetLabel.textContent = label;
+        }
+
+        budgetInput.addEventListener('input', updateBudgetLabel);
+        updateBudgetLabel();
+
+        // Decide which rig type to suggest
+        function pickType(useCase, experience, size, budgetLevel) {
+            // Stealth or small: camper van / SUV-style builds
+            if (size === 'compact' || useCase === 'stealth') {
+                return 'camperVan';
+            }
+
+            // Work focused: truck camper or ambulance-style box
+            if (useCase === 'work') {
+                if (budgetLevel >= 3 && size !== 'compact') return 'ambulanceRig';
+                return 'truckCamper';
+            }
+
+            // Full-time and large: skoolie or big trailer
+            if (useCase === 'fulltime' && size === 'large') {
+                if (budgetLevel >= 3) return 'skoolie';
+                return 'travelTrailer';
+            }
+
+            // Medium, fulltime or frequent use: travel trailer or camper van
+            if (useCase === 'fulltime' || useCase === 'weekend') {
+                if (size === 'medium') {
+                    if (budgetLevel >= 3) return 'travelTrailer';
+                    return 'camperVan';
+                }
+            }
+
+            // Fallback: medium rig that’s flexible
+            return 'camperVan';
+        }
+
+        const typeData = {
+            camperVan: {
+                label: 'Camper Van / Van Conversion',
+                blurb:
+                    'A van-based rig that balances daily drivability with enough space to sleep and cook. Great if you want one vehicle to do almost everything.',
+                pill: 'Stealthy · Flexible · Easy to drive',
+                tags: ['Good for solo or couples', 'City-friendly', 'Low profile'],
+                checklist: [
+                    'Decide early if you need standing height or can live with a lower roof.',
+                    'Plan multi-use furniture: bed that becomes a couch, or cabinets that double as counter space.',
+                    'Use window coverings and ventilation to keep things comfortable and discreet.'
+                ]
+            },
+            ambulanceRig: {
+                label: 'Ambulance Conversion (Box Rig)',
+                blurb:
+                    'A box on a truck or van chassis with built-in storage, wiring, and a strong frame. Great if you want rugged utility and lots of compartments.',
+                pill: 'Rugged · Tons of storage',
+                tags: ['Good for tools & gear', 'Built-in cabinets', 'Strong electrical bones'],
+                checklist: [
+                    'Inspect the frame, roof, and floor for rust and leaks before committing.',
+                    'Decide which original cabinets you’ll keep and which you’ll gut for open space.',
+                    'Plan how you’ll use the exterior compartments: tools, toys, or utilities like batteries and water.'
+                ]
+            },
+            travelTrailer: {
+                label: 'Travel Trailer / Towable Camper',
+                blurb:
+                    'A separate home-on-wheels you tow behind a vehicle. Ideal if you want to park your “house” and still have a free daily driver.',
+                pill: 'Park & stay · Flexible tow vehicle',
+                tags: ['Great for couples/families', 'Home base camping', 'Keep daily driver separate'],
+                checklist: [
+                    'Make sure your tow vehicle is rated safely for the loaded trailer weight.',
+                    'Check roof, seals, and floor for water damage—trailers live or die by weatherproofing.',
+                    'Think about where you’ll store it off-season and how often you’ll move camp.'
+                ]
+            },
+            truckCamper: {
+                label: 'Truck Camper / Slide-In Rig',
+                blurb:
+                    'A camper that rides in the bed of a pickup. Awesome if you already love trucks and want off-road capability without a huge footprint.',
+                pill: 'Compact · Off-road capable',
+                tags: ['Good for remote spots', 'Uses existing truck', 'Easy to unload'],
+                checklist: [
+                    'Confirm your truck’s payload and match it carefully to the camper weight.',
+                    'Plan tie-downs and suspension upgrades if you’ll be off-road frequently.',
+                    'Use vertical space inside (netting, shelves) to keep the tiny interior organized.'
+                ]
+            },
+            skoolie: {
+                label: 'Skoolie (School Bus Conversion)',
+                blurb:
+                    'A full-length or short school bus turned into a rolling tiny home. Max interior space with a very solid shell.',
+                pill: 'Huge interior · Tiny home vibes',
+                tags: ['Great for full-time', 'Tons of layout options', 'Less stealthy'],
+                checklist: [
+                    'Test drive a bus before you buy—make sure you’re truly comfortable with the size.',
+                    'Plan insulation and window strategy early; buses can be ovens or fridges without it.',
+                    'Think in “zones”: bedroom, kitchen, lounge, and storage each get distinct space.'
+                ]
+            }
+        };
+
+        function getRandomTip(experienceLevel) {
+            const pool = tips[experienceLevel] || tips.beginner;
+            const index = Math.floor(Math.random() * pool.length);
+            return pool[index];
+        }
+
+        function experienceLabel(level) {
+            if (level === 'beginner') return 'Beginner-friendly';
+            if (level === 'intermediate') return 'Intermediate builder';
+            return 'Advanced tinkerer';
+        }
+
+        function handleGenerate() {
+            const useCase = useCaseSelect.value;
+            const experience = experienceSelect.value;
+            const size = sizeSelect.value;
+            const budgetLevel = Number(budgetInput.value);
+
+            const key = pickType(useCase, experience, size, budgetLevel);
+            const data = typeData[key];
+
+            resultTypeEl.textContent = data.label;
+            resultPillEl.textContent = '';
+            const pillText = document.createElement('span');
+            pillText.textContent = data.pill;
+            resultPillEl.appendChild(pillText);
+
+            resultBodyEl.textContent = data.blurb;
+
+            tagRowEl.innerHTML = '';
+            data.tags.forEach(tag => {
+                const el = document.createElement('span');
+                el.className = 'tag';
+                el.textContent = tag;
+                tagRowEl.appendChild(el);
+            });
+
+            checklistEl.innerHTML = '';
+            data.checklist.forEach(item => {
+                const li = document.createElement('li');
+                const icon = document.createElement('span');
+                icon.className = 'check-icon';
+                icon.textContent = '✔';
+                const text = document.createElement('span');
+                text.textContent = item;
+                li.appendChild(icon);
+                li.appendChild(text);
+                checklistEl.appendChild(li);
+            });
+
+            tipTagEl.textContent = experienceLabel(experience);
+            tipBodyEl.textContent = getRandomTip(experience);
+            tipSourceEl.textContent = 'Based on your answers';
+
+            placeholderText.style.display = 'none';
+            resultContainer.style.display = 'block';
+        }
+
+        function handleNewTip() {
+            const experience = experienceSelect.value;
+            tipBodyEl.textContent = getRandomTip(experience);
+            tipSourceEl.textContent = 'Another tip for your level';
+        }
+
+        generateBtn.addEventListener('click', handleGenerate);
+        newTipBtn.addEventListener('click', handleNewTip);
+        extraTipBtn.addEventListener('click', handleExtraTip);
+
+        // Show an initial random tip when the page loads
+        extraTipBodyEl.textContent = getRandomGlobalTip();
+    </script>
+</body>
+
+</html>
